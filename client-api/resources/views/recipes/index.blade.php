@@ -1,59 +1,31 @@
-@extends('templates.base')
-@section('title', 'Recetas')
-@section('header', 'Recetas')
-@section('content')    
+@extends('layouts.app')
 
-    <div class="row">
-        <div class="col-lg-12 mb-4 d-grid gap-2 d-md-block">
-            <a href="{{ route('order.create') }}" class="btn btn-primary">Crear</a>
-        </div>
+@section('title', 'Todas las Recetas')
+
+@section('content')
+    <div class="page-header">
+        <h2>Recetas Populares</h2>
+        <a href="{{ route('recipe.create') }}" class="btn btn-primary">Añadir Nueva Receta</a>
     </div>
 
-    @include('templates.messages')
-
-    <div class="row">
-        <div class="col-lg-12 mb-4">
-            <table id="table_data" class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Fecha legalización</th>
-                        <th>Dirección</th>
-                        <th>Ciudad</th>
-                        <th>Causal</th>
-                        <th>Observación</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($orders as $order)
-                        <tr>
-                            <td>{{ $order['id'] }}</td>
-                            <td>{{ $order['legalization_date'] }}</td>
-                            <td>{{ $order['address'] }}</td>
-                            <td>{{ $order['city'] }}</td>
-                            <td>{{ $order['causal']['description'] }}</td>
-                            <td>@if($order['observation']) {{ $order['observation']['description'] }} @endif</td>
-                            <td>
-                                <a href="{{ route('order.edit', $order['id']) }}" class="btn btn-primary btn-circle btn-sm" title="Editar">
-                                    <i class="far fa-edit"></i>
-                                </a>
-                                <a href="{{ route('order.destroy', $order['id']) }}" class="btn btn-danger btn-circle btn-sm" title="Eliminar" 
-                                    onclick="return remove();">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
-                    
-                </tbody>
-            </table>
-        </div>
+    <div class="recipe-grid">
+        @forelse ($recipes as $recipe)
+            <div class="recipe-card">
+                <img src="{{ $recipe['image'] }}" alt="Imagen de {{ $recipe['name'] }}">
+                <div class="card-content">
+                    <h3>{{ $recipe['name'] }}</h3>
+                    <div class="card-info">
+                        <span class="tag {{ strtolower($recipe['difficulty']) }}">{{ $recipe['difficulty'] }}</span>
+                        <span class="tag cuisine">{{ $recipe['cuisine'] }}</span>
+                    </div>
+                    <div class="card-actions">
+                        <a href="{{ route('recipe.edit', $recipe['id']) }}" class="btn btn-secondary">Editar</a>
+                        <a href="{{ route('recipe.destroy', $recipe['id']) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar esta receta?')">Eliminar</a>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <p>No se encontraron recetas para mostrar.</p>
+        @endforelse
     </div>
-    
-
-@endsection
-
-@section('scripts')
-    <script src="{{ asset('js/general.js') }}"></script>
 @endsection
