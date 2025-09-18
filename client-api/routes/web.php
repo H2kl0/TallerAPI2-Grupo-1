@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RecipeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +16,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::prefix('recipe')->group(function(){
+    Route::get('/index', [RecipeController::class, 'index'])->name('recipe.index');
+    Route::get('/create', [RecipeController::class, 'create'])->name('recipe.create');
+    Route::get('/edit/{id}', [RecipeController::class, 'edit'])->name('recipe.edit');
+    Route::post('/store', [RecipeController::class, 'store'])->name('recipe.store');
+    Route::post('/show', [RecipeController::class, 'store'])->name('recipe.show');
+    Route::put('/update/{id}', [RecipeController::class, 'update'])->name('recipe.update');
+    Route::get('/destroy/{id}', [RecipeController::class, 'destroy'])->name('recipe.destroy');
 });
