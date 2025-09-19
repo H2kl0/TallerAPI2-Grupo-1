@@ -15,30 +15,46 @@ class RecipeController extends Controller
      */
     public function index()
     {
-        $url = env('URL_BASE_API', "https://dummyjson.com");
-        $response = Http::acceptJson()->withToken(Session::get('token'))->get($url . '/recipes');
-
-        if ($response->successful()) 
-        {
-            $data = $response->json();
-            $recipes = $data['recipes'];
-            return view('recipe.index', compact('recipes'));
-        } 
-        else
-        {
-            abort($response->status());
+        $base = rtrim(env('URL_BASE_API', 'https://dummyjson.com/recipes'), '/');
+        $client = Http::acceptJson();
+        if ($token = Session::get('token')) {
+            $client = $client->withToken($token);
         }
+
+        try {
+            $response = $client->get($base);
+        } catch (\Throwable $e) {
+            $recipes = [];
+            return view('recipes.index', [
+                'recipes' => $recipes,
+                'errorMessage' => 'No se pudo conectar a la API de recetas. Inténtalo de nuevo más tarde.'
+            ]);
+        }
+
+        if ($response->successful()) {
+            $data = $response->json();
+            $recipes = $data['recipes'] ?? [];
+            return view('recipes.index', compact('recipes'));
+        }
+
+        // En caso de error HTTP, mostrar la vista con mensaje en lugar de abortar con 404
+        $recipes = [];
+        $msg = $response->json()['message'] ?? 'No se pudieron cargar las recetas (HTTP ' . $response->status() . ').';
+        return view('recipes.index', [
+            'recipes' => $recipes,
+            'errorMessage' => $msg,
+        ]);
     }
 
     public function create()
     {
-        return view('recipe.create');
+        return view('recipes.create');
     }
 
     public function store(Request $request)
     {
-        $url = env('URL_BASE_API', "https://dummyjson.com");
-        $response = Http::acceptJson()->withToken(Session::get('token'))->post($url . '/recipes/add', [
+        $base = rtrim(env('URL_BASE_API', 'https://dummyjson.com/recipes'), '/');
+        $response = Http::acceptJson()->withToken(Session::get('token'))->post($base . '/add', [
             
         ]);
 
@@ -60,13 +76,13 @@ class RecipeController extends Controller
 
     public function show(string $id)
     {
-        $url = env('URL_BASE_API', "https://dummyjson.com");
-        $response = Http::acceptJson()->withToken(Session::get('token'))->get($url . '/recipes/' . $id);
+        $base = rtrim(env('URL_BASE_API', 'https://dummyjson.com/recipes'), '/');
+        $response = Http::acceptJson()->withToken(Session::get('token'))->get($base . '/' . $id);
 
         if ($response->successful()) 
         {
             $recipe = $response->json();
-            return view('recipe.show', compact('recipe'));
+            return view('recipes.show', compact('recipe'));
         } 
         else 
         {
@@ -82,7 +98,7 @@ class RecipeController extends Controller
         if ($response->successful())
         {
             $recipe = $response->json();
-            return view('recipe.edit', compact('recipe'));
+            return view('recipes.edit', compact('recipe'));
         } 
         elseif
             ($response->status() == Response::HTTP_NOT_FOUND)
@@ -97,8 +113,8 @@ class RecipeController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $url = env('URL_BASE_API', "https://dummyjson.com");
-        $response = Http::acceptJson()->withToken(Session::get('token'))->put($url . '/recipes/' . $id, [
+        $base = rtrim(env('URL_BASE_API', 'https://dummyjson.com/recipes'), '/');
+        $response = Http::acceptJson()->withToken(Session::get('token'))->put($base . '/' . $id, [
             'name' => $request->name,
             'ingredients' => $request->ingredients, 
             'instructions' => $request->instructions, 
@@ -133,8 +149,8 @@ class RecipeController extends Controller
 
     public function destroy(string $id)
     {
-        $url = env('URL_BASE_API', "https://dummyjson.com");
-        $response = Http::acceptJson()->withToken(Session::get('token'))->delete($url . '/recipes/' . $id);
+        $base = rtrim(env('URL_BASE_API', 'https://dummyjson.com/recipes'), '/');
+        $response = Http::acceptJson()->withToken(Session::get('token'))->delete($base . '/' . $id);
 
         if ($response->successful()) 
         {
@@ -148,3 +164,4 @@ class RecipeController extends Controller
         }
     }
 }
+
