@@ -3,8 +3,17 @@
 @section('title', 'Añadir Nueva Receta')
 
 @section('content')
+    <!-- Header con botón de volver -->
+    <div class="recipe-header">
+        <a href="{{ route('recipe.index') }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Volver a Recetas
+        </a>
+    </div>
+
     <div class="form-container">
-        <h2>Añadir Nueva Receta.</h2>
+        <div class="page-header">
+            <h2><i class="fas fa-plus-circle"></i> Añadir Nueva Receta</h2>
+        </div>
         <form action="{{ route('recipe.store') }}" method="POST">
             @csrf
             <div class="form-group">
@@ -38,6 +47,11 @@
             </div>
 
             <div class="form-group">
+                <label for="caloriesPerServing">Calorías por Porción</label>
+                <input type="number" id="caloriesPerServing" name="caloriesPerServing" min="0" value="{{ old('caloriesPerServing') }}">
+            </div>
+
+            <div class="form-group">
                 <label for="difficulty">Dificultad</label>
                 <select id="difficulty" name="difficulty">
                     <option value="Easy" @if(old('difficulty') == 'Easy') selected @endif>Fácil</option>
@@ -57,8 +71,12 @@
             </div>
             
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Guardar Receta</button>
-                <a href="{{ route('recipe.index') }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Guardar Receta
+                </button>
+                <a href="{{ route('recipe.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
             </div>
         </form>
     </div>

@@ -3,8 +3,17 @@
 @section('title', 'Editar Receta')
 
 @section('content')
+    <!-- Header con botón de volver -->
+    <div class="recipe-header">
+        <a href="{{ route('recipe.index') }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Volver a Recetas
+        </a>
+    </div>
+
     <div class="form-container">
-        <h2>Editar: {{ $recipe['name'] }} ✏️</h2>
+        <div class="page-header">
+            <h2><i class="fas fa-edit"></i> Editar: {{ $recipe['name'] }}</h2>
+        </div>
         <form action="{{ route('recipe.update', $recipe['id']) }}" method="POST">
             @csrf
             @method('PUT')
@@ -39,6 +48,11 @@
             </div>
 
             <div class="form-group">
+                <label for="caloriesPerServing">Calorías por Porción</label>
+                <input type="number" id="caloriesPerServing" name="caloriesPerServing" min="0" value="{{ old('caloriesPerServing', $recipe['caloriesPerServing']) }}">
+            </div>
+
+            <div class="form-group">
                 <label for="difficulty">Dificultad</label>
                 <select id="difficulty" name="difficulty">
                     <option value="Easy" @if(old('difficulty', $recipe['difficulty']) == 'Easy') selected @endif>Fácil</option>
@@ -58,8 +72,15 @@
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                <a href="{{ route('recipe.index') }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Guardar Cambios
+                </button>
+                <a href="{{ route('recipe.show', $recipe['id']) }}" class="btn btn-secondary">
+                    <i class="fas fa-eye"></i> Ver Receta
+                </a>
+                <a href="{{ route('recipe.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
             </div>
         </form>
     </div>
