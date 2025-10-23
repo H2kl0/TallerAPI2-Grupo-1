@@ -41,7 +41,7 @@ class AuthController extends Controller
         {
             $jsonResponse = json_decode($response->body());
             Session::put('user', $jsonResponse);
-            Session::put('token', $jsonResponse->accessToken);
+            Session::put('token', $jsonResponse->token);
             Session::put('refreshToken', $jsonResponse->refreshToken);
             
             return redirect()->route('recipe.index')->with('message', '¡Bienvenido de vuelta, ' . $jsonResponse->firstName . '!');
