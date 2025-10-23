@@ -72,7 +72,7 @@ class RecipeController extends Controller
         $instructions = array_filter(array_map('trim', explode("\n", $request->instructions)));
 
         $base = rtrim(env('URL_BASE_API', 'https://dummyjson.com/recipes'), '/');
-        $response = Http::acceptJson()->post($base . '/add', [
+       $response = Http::acceptJson()->withToken(Session::get('token'))->post($base . '/add', [
             'name' => $request->name,
             'ingredients' => $ingredients,
             'instructions' => $instructions,
@@ -101,8 +101,8 @@ class RecipeController extends Controller
     public function show(string $id)
     {
         try {
-            $response = Http::acceptJson()->get("https://dummyjson.com/recipes/{$id}");
-            
+           $response = Http::acceptJson()->withToken(Session::get('token'))->get("https://dummyjson.com/recipes/{$id}");
+
             if ($response->successful()) {
                 $recipe = $response->json();
                 return view('recipes.show', compact('recipe'));
@@ -119,7 +119,7 @@ class RecipeController extends Controller
     public function edit(string $id)
     {
         try {
-            $response = Http::acceptJson()->get("https://dummyjson.com/recipes/{$id}");
+           $response = Http::acceptJson()->withToken(Session::get('token'))->get("https://dummyjson.com/recipes/{$id}");
             
             if ($response->successful()) {
                 $recipe = $response->json();
@@ -155,7 +155,7 @@ class RecipeController extends Controller
         $instructions = array_filter(array_map('trim', explode("\n", $request->instructions)));
 
         $base = rtrim(env('URL_BASE_API', 'https://dummyjson.com/recipes'), '/');
-        $response = Http::acceptJson()->put($base . '/' . $id, [
+        $response = Http::acceptJson()->withToken(Session::get('token'))->put($base . '/' . $id, [
             'name' => $request->name,
             'ingredients' => $ingredients, 
             'instructions' => $instructions, 
@@ -194,8 +194,7 @@ class RecipeController extends Controller
     public function destroy(string $id)
     {
         $base = rtrim(env('URL_BASE_API', 'https://dummyjson.com/recipes'), '/');
-        $response = Http::acceptJson()->delete($base . '/' . $id);
-
+       $response = Http::acceptJson()->withToken(Session::get('token'))->delete($base . '/' . $id);
         if ($response->successful()) 
         {
             session()->flash('message', 'Receta eliminada exitosamente');
